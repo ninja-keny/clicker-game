@@ -1,6 +1,8 @@
 import turtle 
+import random
 import time
 
+fortune_circle = turtle.Turtle()
 shop2 = turtle.Turtle()
 draw = turtle.Turtle()
 shop = turtle.Turtle()
@@ -25,11 +27,30 @@ wait = 0
 click_power = 1
 swicth = 0
 setting_on = False
-
+color_chose = 0
+fortune_circle.speed(0)
+color_fortune = ["blue", "yellow", "ornage", "green", "red", "purple","pink","voilet"]
 def players_score():
     global score
     draw.clear()   
     draw.write("Score: " + str(score), font=("Arial", 16, "bold"))
+    
+def change_color():
+  global color_chose
+  if color_chose == 8:
+    color_chose = 0
+  if setting_on == False:
+   fortune_circle.color(color_fortune[color_chose])
+   fortune_circle.dot(50)
+   color_chose+=1
+  screen.ontimer(change_color,1000)
+  
+#fortune circle
+fortune_circle.hideturtle()
+fortune_circle.penup()
+fortune_circle.goto(60,-180)
+change_color()
+
 
 #purchase
 purchase.hideturtle()
@@ -179,6 +200,7 @@ def clicked(x, y):
                 players_score()
                 lightblue.clear()
                 green.clear()
+                fortune_circle.dot(50)
 
     # SETTINGS BUTTON
     if setting_turtle.distance(x,y) < 60:
@@ -186,6 +208,7 @@ def clicked(x, y):
             if swicth == 0 :
                 swicth = swicth + 1
                 setting_on = True
+                fortune_circle.clear()
                 shop.clear()
                 upgrade.clear()
                 autoclick.clear()
@@ -231,6 +254,16 @@ def clicked(x, y):
     if lightblue.distance(x,y) < 20 and setting_on:
         screen.bgcolor("lightblue")
     
+    if fortune_circle.distance(x,y) < 50 and setting_on == False:
+      addorsub = random.randint(1,2)
+      if score >= 0:
+        if addorsub == 1:
+          score -= random.randint(0,score)
+        elif addorsub == 2:
+          score += random.randint(0,score)
+        players_score()
+        
+        
     if green.distance(x,y) < 20 and setting_on:
         screen.bgcolor("green")
 
