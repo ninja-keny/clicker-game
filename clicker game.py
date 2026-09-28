@@ -2,6 +2,9 @@ import turtle
 import random
 import time
 
+rebirth = turtle.Turtle()
+buy_all = turtle.Turtle()
+text = turtle.Turtle()
 fortune_circle = turtle.Turtle()
 shop2 = turtle.Turtle()
 draw = turtle.Turtle()
@@ -21,10 +24,12 @@ run = True
 turtle.hideturtle()
 autoclick.hideturtle()
 
+rebirth_need = 1000000000
 shop_on = False
 click = 0
 wait = 0
 click_power = 1
+already_click = False
 swicth = 0
 setting_on = False
 color_chose = 0
@@ -51,7 +56,40 @@ fortune_circle.penup()
 fortune_circle.goto(60,-180)
 change_color()
 
+#rebirth
+rebirth.hideturtle()
+rebirth.penup()
+rebirth.speed(0)
+def rebirth_box():
+  rebirth.goto(-50,200)
+  rebirth.color("black")
+  rebirth.begin_fill()
+  rebirth.pendown()
+  for i in range(2):
+   rebirth.forward(100)
+   rebirth.right(90)
+   rebirth.forward(50)
+   rebirth.right(90)
+  rebirth.color("yellow")
+  rebirth.end_fill()
+  rebirth.penup()
+  rebirth.goto(-40,180)
+  rebirth.color("black")
+  rebirth.write("rebirth",font=("Arial",15, "bold"))
 
+
+
+#text for fortue circle
+text.hideturtle()
+text.speed(0)
+text.penup()
+
+def text_circle():
+ text.goto(43,-180)
+ text.write("fortune",font=("Arial",7, "bold"))
+ text.goto(47,-190)
+ text.write("wheel",font=("Arial",7,"bold"))
+text_circle()
 #purchase
 purchase.hideturtle()
 purchase.penup()
@@ -64,6 +102,12 @@ upgrade2.penup()
 upgrade2.goto(108,150)
 upgrade2.pendown()
 upgrade2.pensize(5)
+
+#buy all button
+buy_all.penup()
+buy_all.hideturtle()
+buy_all.pensize(5)
+buy_all.goto(108,200)
 
 #light blue
 lightblue.penup()
@@ -118,7 +162,7 @@ def setting_box():
     setting_turtle.forward(25)
     setting_turtle.color("black")
     setting_turtle.write("setting", font=("Arial", 13, "bold"))
- 
+    
 setting_box()
     
 # upgrade
@@ -168,7 +212,6 @@ draw.goto(-100, 100)
 draw.pendown()
 draw.write("Score: 0", font=("Arial", 16, "bold"))
 draw.hideturtle()
-
 def clicked(x, y):
     global score
     global shop_on
@@ -178,7 +221,7 @@ def clicked(x, y):
     global swicth
     global setting_on
     global click_power
-
+    global already_click
     # click circle
     if turtle.distance(x, y) < 25:
         score += click_power
@@ -200,6 +243,7 @@ def clicked(x, y):
                 players_score()
                 lightblue.clear()
                 green.clear()
+                text_circle()
                 fortune_circle.dot(50)
 
     # SETTINGS BUTTON
@@ -211,12 +255,16 @@ def clicked(x, y):
                 fortune_circle.clear()
                 shop.clear()
                 upgrade.clear()
+                buy_all.clear()
                 autoclick.clear()
                 upgrade2.clear()
                 setting_turtle.clear()
+                text.clear()
                 draw.clear()
                 turtle.clear()
                 color.hideturtle()
+                shop_on = False
+                click = 0
                 back.penup()
                 back.goto(-190,150)
                 color.penup()
@@ -255,11 +303,11 @@ def clicked(x, y):
         screen.bgcolor("lightblue")
     
     if fortune_circle.distance(x,y) < 50 and setting_on == False:
-      addorsub = random.randint(1,2)
+      addorsub = random.randint(1,3)
       if score >= 0:
         if addorsub == 1:
           score -= random.randint(0,score)
-        elif addorsub == 2:
+        elif addorsub == 2 or addorsub == 3:
           score += random.randint(0,score)
         players_score()
         
@@ -270,7 +318,54 @@ def clicked(x, y):
     if swicth == 2:
         swicth = 0
 
-    # SHOP BUTTON
+
+    # BUY AUTOCLICKER
+    if autoclick.distance(x,y) < 40 and shop_on:
+        if score > 99:
+            score -= 100
+            extra += 1
+            if already_click == False:
+             already_click = True
+             autoclicker()
+        else:
+            purchase.color("red")
+            purchase.write("not enough clicks", font=("Arial",16,"bold"))
+            time.sleep(0.5)
+            purchase.clear()
+
+    # BUY POWER CLICK
+    if upgrade2.distance(x,y) < 40 and shop_on:
+        if score > 9:
+            score -= 10
+            draw.clear()   
+            draw.write("Score: " + str(score), font=("Arial", 16, "bold"))
+            click_power += 1
+        else:
+            purchase.color("red")
+            purchase.write("not enough clicks", font=("Arial",16,"bold"))
+            time.sleep(0.5)
+            purchase.clear()
+            
+    if buy_all.distance(x,y) < 40 and shop_on:
+      while score > 99:
+        score = score - 100
+        extra +=1
+        if already_click == False:
+          already_click = True
+          autoclicker()
+      if score > 9:
+       while score > 9:
+        score -= 10
+        draw.clear()   
+        draw.write("Score: " + str(score), font=("Arial", 16, "bold"))
+        click_power += 1
+      else:
+        purchase.color("red")
+        purchase.write("not enough clicks", font=("Arial",16,"bold"))
+        time.sleep(0.5)
+        purchase.clear()
+        
+   #shop
     if shop.distance(x,y) < 70:
         if click == 2:
             click = 0
@@ -355,6 +450,30 @@ def clicked(x, y):
                 upgrade2.write("cost 10 clicks", font = ("Arial",8,"bold"))
                 upgrade2.penup()
                 upgrade2.goto(140,130)
+                
+                buy_all.goto(108,30)
+                buy_all.speed(10000000)
+                buy_all.begin_fill()
+                buy_all.color("black")
+                buy_all.pendown()
+                for i in range(2):
+                    buy_all.forward(80)
+                    buy_all.right(90)
+                    buy_all.forward(40)
+                    buy_all.right(90)
+                buy_all.color("grey")
+                buy_all.end_fill()
+                buy_all.color("black")
+                buy_all.penup()
+                buy_all.goto(110,10)
+                buy_all.pendown()
+                buy_all.write("buy all upgrades", font = ("Arial",7,"bold"))
+                buy_all.penup()
+                buy_all.goto(110,0)
+                buy_all.pendown()
+                buy_all.write("need more that 10 clicks", font = ("Arial",5,"bold"))
+                buy_all.penup()
+                buy_all.goto(140,10)
           
                 autoclick.hideturtle()
                 autoclick.penup()
@@ -376,33 +495,7 @@ def clicked(x, y):
                 autoclick.pendown()
                 autoclick.write("cost 100 clicks", font = ("Arial",8,"bold"))
                 autoclick.penup()
-                autoclick.goto(150,70)
-
-    # BUY AUTOCLICKER
-    if autoclick.distance(x,y) < 40 and shop_on:
-        if score > 99:
-            score -= 100
-            extra += 1
-            autoclicker()   
-        else:
-            purchase.color("red")
-            purchase.write("not enough clicks", font=("Arial",16,"bold"))
-            time.sleep(0.5)
-            purchase.clear()
-
-    # BUY POWER CLICK
-    if upgrade2.distance(x,y) < 40 and shop_on:
-        if score > 9:
-            score -= 10
-            draw.clear()   
-            draw.write("Score: " + str(score), font=("Arial", 16, "bold"))
-            click_power += 1
-        else:
-            purchase.color("red")
-            purchase.write("not enough clicks", font=("Arial",16,"bold"))
-            time.sleep(0.5)
-            purchase.clear()
-
+                autoclick.goto(150,60)
     # EXIT SHOP
     if upgrade.distance(x,y) < 40:
         if click == 2:
@@ -414,6 +507,7 @@ def clicked(x, y):
                 upgrade.clear()
                 upgrade2.clear()
                 autoclick.clear()
+                buy_all.clear()
                 shop.goto(100,150)
                 shop_drawing()
                 shop_on = False
