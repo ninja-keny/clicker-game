@@ -24,6 +24,7 @@ run = True
 turtle.hideturtle()
 autoclick.hideturtle()
 
+loading = False
 rebirth_need = 1000000000
 shop_on = False
 click = 0
@@ -56,6 +57,11 @@ fortune_circle.penup()
 fortune_circle.goto(60,-180)
 change_color()
 
+#enlarge
+def big_circle():
+ turtle.clear()
+ turtle.dot(50)
+  
 #rebirth
 rebirth.hideturtle()
 rebirth.penup()
@@ -139,7 +145,7 @@ def autoclicker():
     # ALWAYS update score
     draw.clear()
     draw.write("Score: " + str(score), font=("Arial", 16, "bold"))
-
+    
     screen.ontimer(autoclicker, 1000)
 
 # setting
@@ -222,11 +228,14 @@ def clicked(x, y):
     global setting_on
     global click_power
     global already_click
+    global loading
     # click circle
     if turtle.distance(x, y) < 25:
-        score += click_power
-        draw.clear()   
-        draw.write("Score: " + str(score), font=("Arial", 16, "bold"))
+       score += click_power
+       turtle.dot(70)
+       big_circle()
+       draw.clear()   
+       draw.write("Score: " + str(score), font=("Arial", 16, "bold"))
 
     # BACK BUTTON
     if back.distance(x,y) < 60:
@@ -304,13 +313,15 @@ def clicked(x, y):
     
     if fortune_circle.distance(x,y) < 50 and setting_on == False:
       addorsub = random.randint(1,3)
-      if score >= 0:
+      try:
+       if score >= 0:
         if addorsub == 1:
           score -= random.randint(0,score)
         elif addorsub == 2 or addorsub == 3:
           score += random.randint(0,score)
         players_score()
-        
+      except: 
+         pass
         
     if green.distance(x,y) < 20 and setting_on:
         screen.bgcolor("green")
@@ -372,7 +383,7 @@ def clicked(x, y):
         else:  
             click += 1
         if click == 1:
-            if shop_on == False:      
+            if shop_on == False:
                 shop.clear()
                 shop.speed(10000000000000000000)
                 shop_on = True
@@ -381,7 +392,7 @@ def clicked(x, y):
                     click = 0
                 else:  
                     click += 1
-
+                loading = True
                 # DRAW SHOP
                 upgrade.clear()
                 upgrade.penup()
@@ -496,8 +507,10 @@ def clicked(x, y):
                 autoclick.write("cost 100 clicks", font = ("Arial",8,"bold"))
                 autoclick.penup()
                 autoclick.goto(150,60)
+                loading = False
     # EXIT SHOP
     if upgrade.distance(x,y) < 40:
+      if loading == False:
         if click == 2:
             click = 0
         else:  
